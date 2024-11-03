@@ -72,5 +72,3 @@ def take_quiz():
 
     print("\nThank you! Your profile has been saved successfully.")
 
-# Run the quiz function
-take_quiz()
