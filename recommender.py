@@ -2,35 +2,19 @@ import numpy as np
 import pandas as pd
 
 # Sample user profile and activities database
-user_profile = {
-    'social': 6,
-    'occupational': 4,
-    'environmental': 5,
-    'spiritual': 7,
-    'intellectual': 8,
-    'emotional': 6,
-    'physical': 4
-}
+activities = pd.read_csv('data/dummy_activities.csv')
+past_user_data = pd.read_csv('data/dummy_past_user_data.csv')
+user_profile = pd.read_csv('data/user_profile.csv').iloc[0].to_dict()
 
-activities = pd.DataFrame([
-    {'name': 'Hiking', 'social': 7, 'occupational': 3, 'environmental': 9, 'spiritual': 6, 'intellectual': 4, 'emotional': 8, 'physical': 8},
-    {'name': 'Meditation', 'social': 3, 'occupational': 2, 'environmental': 5, 'spiritual': 9, 'intellectual': 7, 'emotional': 9, 'physical': 2},
-    {'name': 'Book Club', 'social': 8, 'occupational': 4, 'environmental': 3, 'spiritual': 5, 'intellectual': 9, 'emotional': 7, 'physical': 3},
-    {'name': 'Yoga', 'social': 5, 'occupational': 3, 'environmental': 6, 'spiritual': 8, 'intellectual': 5, 'emotional': 7, 'physical': 7},
-    {'name': 'Volunteering', 'social': 9, 'occupational': 6, 'environmental': 7, 'spiritual': 8, 'intellectual': 6, 'emotional': 8, 'physical': 5}
-])
-
-# Placeholder for past user data (for similarity scoring)
-past_user_data = pd.DataFrame([
-    {'profile': {'social': 7, 'occupational': 5, 'environmental': 5, 'spiritual': 6, 'intellectual': 8, 'emotional': 6, 'physical': 5}, 'activity': 'Hiking'},
-    {'profile': {'social': 4, 'occupational': 3, 'environmental': 5, 'spiritual': 8, 'intellectual': 6, 'emotional': 7, 'physical': 4}, 'activity': 'Meditation'},
-    # Additional records as needed
-])
+# Load swiped right and swiped left data from CSV
+try:
+    swiped_right = set(pd.read_csv('swiped_right.csv')['activity'].tolist())
+    swiped_left = set(pd.read_csv('swiped_left.csv')['activity'].tolist())
+except FileNotFoundError:
+    swiped_right = set()
+    swiped_left = set()
 
 
-# List of activities swiped right and left by the user
-swiped_right = set()
-swiped_left = set()
 
 # Scoring functions
 def calculate_gap_score(user_profile, activity):
@@ -74,7 +58,8 @@ def user_swipe(activity_name, direction, swiped_right, swiped_left):
     elif direction == 'left':
         swiped_left.add(activity_name)
 
-while True: 
+user_swiping = True
+while user_swiping: 
     # Get initial recommendation
     recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
     print(f"Recommended activity: {recommended}")
@@ -86,3 +71,9 @@ while True:
     # Get a new recommendation based on updated data
     new_recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
     print(f"New recommended activity: {new_recommended}")
+    user_swiping = bool(input("Do you want another recommendation?"))
+
+
+# Save swiped right and swiped left back to CSVs
+pd.DataFrame({'activity': list(swiped_right)}).to_csv('swiped_right.csv', index=False)
+pd.DataFrame({'activity': list(swiped_left)}).to_csv('swiped_left.csv', index=False)
