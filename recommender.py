@@ -1,20 +1,6 @@
 import numpy as np
 import pandas as pd
 
-# Sample user profile and activities database
-activities = pd.read_csv('data/dummy_activities.csv')
-past_user_data = pd.read_csv('data/dummy_past_user_data.csv')
-user_profile = pd.read_csv('data/user_profile.csv').iloc[0].to_dict()
-
-# Load swiped right and swiped left data from CSV
-try:
-    swiped_right = set(pd.read_csv('swiped_right.csv')['activity'].tolist())
-    swiped_left = set(pd.read_csv('swiped_left.csv')['activity'].tolist())
-except FileNotFoundError:
-    swiped_right = set()
-    swiped_left = set()
-
-
 
 # Scoring functions
 def calculate_gap_score(user_profile, activity):
@@ -58,22 +44,36 @@ def user_swipe(activity_name, direction, swiped_right, swiped_left):
     elif direction == 'left':
         swiped_left.add(activity_name)
 
-user_swiping = True
-while user_swiping: 
-    # Get initial recommendation
-    recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
-    print(f"Recommended activity: {recommended}")
+def swiping():
+    # Sample user profile and activities database
+    activities = pd.read_csv('data/dummy_activities.csv')
+    past_user_data = pd.read_csv('data/dummy_past_user_data.csv')
+    user_profile = pd.read_csv('data/user_profile.csv').iloc[0].to_dict()
 
-    # User swipes on the activity
-    direction = input("Swipe right or left?")
-    user_swipe(recommended, direction, swiped_right, swiped_left)
+    # Load swiped right and swiped left data from CSV
+    try:
+        swiped_right = set(pd.read_csv('swiped_right.csv')['activity'].tolist())
+        swiped_left = set(pd.read_csv('swiped_left.csv')['activity'].tolist())
+    except FileNotFoundError:
+        swiped_right = set()
+        swiped_left = set()
 
-    # Get a new recommendation based on updated data
-    new_recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
-    print(f"New recommended activity: {new_recommended}")
-    user_swiping = bool(input("Do you want another recommendation?"))
+    user_swiping = True
+    while user_swiping: 
+        # Get initial recommendation
+        recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
+        print(f"Recommended activity: {recommended}")
+
+        # User swipes on the activity
+        direction = input("Swipe right or left?")
+        user_swipe(recommended, direction, swiped_right, swiped_left)
+
+        # Get a new recommendation based on updated data
+        new_recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
+        print(f"New recommended activity: {new_recommended}")
+        user_swiping = bool(input("Do you want another recommendation?"))
 
 
-# Save swiped right and swiped left back to CSVs
-pd.DataFrame({'activity': list(swiped_right)}).to_csv('swiped_right.csv', index=False)
-pd.DataFrame({'activity': list(swiped_left)}).to_csv('swiped_left.csv', index=False)
+    # Save swiped right and swiped left back to CSVs
+    pd.DataFrame({'activity': list(swiped_right)}).to_csv('swiped_right.csv', index=False)
+    pd.DataFrame({'activity': list(swiped_left)}).to_csv('swiped_left.csv', index=False)

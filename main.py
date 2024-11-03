@@ -1,6 +1,8 @@
 from data.users import User
 from data.activities import Activity
 from flask import Flask, render_template
+from personality_quiz import take_quiz
+from recommender import swiping
 
 DEVELOPMENT_ENV = True
 app = Flask(__name__)

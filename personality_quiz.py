@@ -53,6 +53,7 @@ def take_quiz():
             while True:
                 try:
                     score = int(input(question))
+                    # This is a placeholder for when this can be connected to the frontend
                     if 1 <= score <= 10:
                         total_score += score
                         break
