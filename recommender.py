@@ -67,10 +67,6 @@ def swiping():
         # User swipes on the activity
         direction = input("Swipe right or left?")
         user_swipe(recommended, direction, swiped_right, swiped_left)
-
-        # Get a new recommendation based on updated data
-        new_recommended = recommend_activity(user_profile, activities, past_user_data, swiped_right, swiped_left)
-        print(f"New recommended activity: {new_recommended}")
         user_swiping = bool(input("Do you want another recommendation?"))
 
 
